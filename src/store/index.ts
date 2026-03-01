@@ -19,4 +19,4 @@ export {
 } from "./selectors";
 
 export type { AppStore }        from "./useAppStore";
-export type { View, SaveStatus } from "./slices/navigationSlice";
+export type { View } from "./slices/navigationSlice";

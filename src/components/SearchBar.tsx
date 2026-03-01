@@ -1,5 +1,5 @@
 // SearchBar + filtros por etiqueta/cuatrimestre
-import { useState, useRef } from "react";
+import {  useRef } from "react";
 
 const CSS = `
   @keyframes sb-enter { from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)} }

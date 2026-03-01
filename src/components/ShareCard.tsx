@@ -44,7 +44,7 @@ const CSS = `
 // Colores de materias (mismos que App.tsx)
 const MAT_COLORS = ["#FF6B6B","#FF9F43","#FECA57","#48CAE4","#6C5CE7","#A29BFE","#55EFC4","#FD79A8"];
 
-function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lineH: number) {
+/* function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lineH: number) {
   const words = text.split(" ");
   let line = "";
   for (const word of words) {
@@ -55,7 +55,7 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
   }
   if (line) ctx.fillText(line, x, y);
   return y + lineH;
-}
+} */
 
 function drawCard(canvas: HTMLCanvasElement, materias: MateriaRow[], streak: number) {
   const W = 800, H = Math.max(480, 220 + materias.length * 72 + 80);

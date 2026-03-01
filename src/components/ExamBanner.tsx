@@ -3,7 +3,7 @@
 // Se muestra al abrir la app si hay exámenes en los próximos N días.
 // El usuario puede cerrarla (se recuerda por sesión, no entre recargas).
 // ─────────────────────────────────────────────────────────────────────────────
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { useExamenStore }  from "../store/useExamenStore";
 import { useMateriaStore } from "../store/useMateriaStore";
 import type { ExamenRow }  from "../types";

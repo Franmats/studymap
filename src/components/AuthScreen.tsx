@@ -18,7 +18,7 @@ const GoogleLogo = () => (
 type Modo = "login" | "registro";
 
 export function AuthScreen() {
-  const { login, register, loginGoogle, authError, clearError, loading } = useAuthStore();
+  const { login, register, loginGoogle, authError, clearError } = useAuthStore();
 
   const [modo,       setModo]       = useState<Modo>("login");
   const [email,      setEmail]      = useState("");

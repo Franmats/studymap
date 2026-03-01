@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import type { MateriaRow } from "../types";
 import { EtiquetaSelector } from "./EtiquetaSelector";
 

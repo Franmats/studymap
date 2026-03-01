@@ -43,7 +43,7 @@ function friendlyError(e: AuthError | Error | unknown): string {
   return "Ocurrió un error. Intentá de nuevo.";
 }
 
-export const useAuthStore = create<AuthStore>()((set, get) => ({
+export const useAuthStore = create<AuthStore>()((set) => ({
   user:      null,
   session:   null,
   loading:   true,
