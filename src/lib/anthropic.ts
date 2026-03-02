@@ -1,6 +1,6 @@
 import type { Syllabus } from "../types";
+import { supabase } from "./supabase";
 
-// En desarrollo apunta a localhost, en producción a Render
 const API_URL = import.meta.env.VITE_API_URL as string;
 
 if (!API_URL) {
@@ -8,13 +8,20 @@ if (!API_URL) {
 }
 
 export async function analyzeSyllabus(file: File): Promise<Syllabus> {
+  // Obtener el JWT del usuario actual para autenticar el request al backend
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error("No hay sesión activa. Iniciá sesión primero.");
+
   const formData = new FormData();
   formData.append("file", file);
 
   const response = await fetch(`${API_URL}/api/analyze`, {
     method: "POST",
+    headers: {
+      "Authorization": `Bearer ${session.access_token}`,
+      // NO poner Content-Type — el browser lo setea automático con el boundary de multipart
+    },
     body: formData,
-    // No poner Content-Type: el browser lo setea automático con el boundary de multipart
   });
 
   if (!response.ok) {

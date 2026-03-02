@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo, lazy, Suspense } from "react";
 import { useShallow } from "zustand/react/shallow";
-import "./App.css"
 import {
   useAppStore, useMateriaStore, useExamenStore,
   selectRoadmapStats, selectUnitStatusCounts,
@@ -24,10 +23,14 @@ import { useConfetti }      from "./components/Confetti";
 import { DailyWidget }      from "./components/DailyWidget";
 import { ActivityHeatmap }  from "./components/ActivityHeatmap";
 import { useSesionStore }   from "./store/useSesionStore";
+import { useSprintStore }   from "./store/useSprintStore";
+import { useScheduleStore } from "./store/useScheduleStore";
 
-// Lazy loading — CalendarView y ShareCard solo se cargan cuando el usuario los abre
-const CalendarView = lazy(() => import("./components/calendar/CalendarView").then(m => ({ default: m.CalendarView })));
-const ShareCard    = lazy(() => import("./components/ShareCard").then(m => ({ default: m.ShareCard })));
+// Lazy loading — CalendarView, ShareCard y SprintView solo se cargan cuando el usuario los abre
+const CalendarView  = lazy(() => import("./components/calendar/CalendarView").then(m => ({ default: m.CalendarView })));
+const ShareCard     = lazy(() => import("./components/ShareCard").then(m => ({ default: m.ShareCard })));
+const SprintView    = lazy(() => import("./components/sprint/SprintView").then(m => ({ default: m.SprintView })));
+const ScheduleView  = lazy(() => import("./components/schedule/ScheduleView").then(m => ({ default: m.ScheduleView })));
 
 const COLORS = [
   { bg: "#FF6B6B", light: "#FFE5E5", text: "#8B0000" },
@@ -70,13 +73,13 @@ const CSS = `
 
   /* ── PAGE CONTENT ── */
   .page {
-    max-width: 720px; margin: 0;
+    max-width: 720px; margin: 0 auto;
     padding: 20px 16px 32px;
     animation: fadeUp .25s ease;
   }
 
   @media (min-width: 720px) {
-    .page { padding: 28px 36px 40px; max-width: 800px; margin: 0 100px; }
+    .page { padding: 28px 36px 40px; max-width: 800px; }
   }
 
   /* ── LIST ── */
@@ -243,6 +246,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
   const fetchExamenes   = useExamenStore((s) => s.fetchExamenes);
 
   const { fetchHistorial, registrarActividad } = useSesionStore();
+  const fetchSprints  = useSprintStore(s => s.fetchSprints);
+  const fetchClases   = useScheduleStore(s => s.fetchClases);
 
   // ── Búsqueda y filtros ────────────────────────────────────────────────────
   const [query,          setQuery]          = useState("");
@@ -281,7 +286,9 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
     fetchMaterias();
     fetchExamenes();
     fetchHistorial();
-  }, [fetchMaterias, fetchExamenes, fetchHistorial]);
+    fetchSprints();
+    fetchClases();
+  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const processFile = async (file: File) => {
@@ -531,6 +538,28 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
               </div>
             }>
               <CalendarView />
+            </Suspense>
+          )}
+
+          {/* ── SPRINTS ── */}
+          {view === "sprint" && (
+            <Suspense fallback={
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+              </div>
+            }>
+              <SprintView />
+            </Suspense>
+          )}
+
+          {/* ── HORARIOS ── */}
+          {view === "schedule" && (
+            <Suspense fallback={
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+              </div>
+            }>
+              <ScheduleView />
             </Suspense>
           )}
 
