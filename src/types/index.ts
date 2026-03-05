@@ -110,3 +110,33 @@ export interface ClaseRow {
   aula: string | null;
   created_at: string;
 }
+
+// ── Time Control types ─────────────────────────────────────────────────────────
+export type ActividadCategoria = "estudio" | "cursada" | "descanso" | "ejercicio" | "ocio";
+
+export interface ActividadConfig {
+  categoria:  ActividadCategoria;
+  label:      string;
+  icon:       string;
+  color:      string;
+  min_horas:  number;   // mínimo diario en horas (0 = sin mínimo)
+  max_horas:  number;   // máximo diario en horas (0 = sin máximo)
+}
+
+export interface RegistroActividad {
+  id:         string;
+  fecha:      string;           // YYYY-MM-DD
+  categoria:  ActividadCategoria;
+  horas:      number;           // horas registradas ese día
+  nota:       string | null;
+}
+
+export interface TimeControlRow {
+  id:         string;
+  user_id:    string;
+  fecha:      string;
+  categoria:  ActividadCategoria;
+  horas:      number;
+  nota:       string | null;
+  created_at: string;
+}

@@ -2,19 +2,37 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>StudyMap AI</title>
 
-    <!-- Inter — Google Fonts, preconnect para reducir latencia -->
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color"       content="#0f0c29" />
+    <meta name="color-scheme"      content="dark" />
+    <meta name="application-name"  content="StudyMap AI" />
+    <meta name="description"       content="Organizá tu estudio con inteligencia artificial" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable"          content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title"            content="StudyMap" />
+    <link rel="apple-touch-icon"   href="/icons/apple-touch-icon.png" />
+
+    <!-- Íconos -->
+    <link rel="icon" href="/icons/favicon-32.png" type="image/png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="StudyMap AI" />
+    <meta property="og:description" content="Organizá tu estudio con inteligencia artificial" />
+    <meta property="og:image"       content="/icons/icon-512.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
     <style>
-      /* Reset mínimo antes de que cargue React */
       *, *::before, *::after { box-sizing: border-box; }
       html, body {
         margin: 0; padding: 0;
@@ -22,7 +40,6 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
-      /* Evitar flash de fondo blanco mientras carga */
       body { background: #0f0c29; }
       #root { min-height: 100dvh; display: flex; flex-direction: column; }
     </style>
@@ -30,5 +47,16 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Registrar Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('[SW] registrado:', reg.scope))
+            .catch(err => console.warn('[SW] error:', err));
+        });
+      }
+    </script>
   </body>
 </html>

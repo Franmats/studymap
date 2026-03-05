@@ -24,13 +24,16 @@ import { DailyWidget }      from "./components/DailyWidget";
 import { ActivityHeatmap }  from "./components/ActivityHeatmap";
 import { useSesionStore }   from "./store/useSesionStore";
 import { useSprintStore }   from "./store/useSprintStore";
-import { useScheduleStore } from "./store/useScheduleStore";
+import { useScheduleStore }   from "./store/useScheduleStore";
+import { useTimeControlStore } from "./store/useTimeControlStore";
+import { PomodoroWidget }      from "./components/pomodoro/PomodoroWidget";
 
 // Lazy loading — CalendarView, ShareCard y SprintView solo se cargan cuando el usuario los abre
 const CalendarView  = lazy(() => import("./components/calendar/CalendarView").then(m => ({ default: m.CalendarView })));
 const ShareCard     = lazy(() => import("./components/ShareCard").then(m => ({ default: m.ShareCard })));
 const SprintView    = lazy(() => import("./components/sprint/SprintView").then(m => ({ default: m.SprintView })));
 const ScheduleView  = lazy(() => import("./components/schedule/ScheduleView").then(m => ({ default: m.ScheduleView })));
+const TimeControlView = lazy(() => import("./components/timecontrol/TimeControlView").then(m => ({ default: m.TimeControlView })));
 
 const COLORS = [
   { bg: "#FF6B6B", light: "#FFE5E5", text: "#8B0000" },
@@ -247,7 +250,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
 
   const { fetchHistorial, registrarActividad } = useSesionStore();
   const fetchSprints  = useSprintStore(s => s.fetchSprints);
-  const fetchClases   = useScheduleStore(s => s.fetchClases);
+  const fetchClases      = useScheduleStore(s => s.fetchClases);
+  const fetchRegistros   = useTimeControlStore(s => s.fetchRegistros);
 
   // ── Búsqueda y filtros ────────────────────────────────────────────────────
   const [query,          setQuery]          = useState("");
@@ -288,7 +292,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
     fetchHistorial();
     fetchSprints();
     fetchClases();
-  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases]);
+    fetchRegistros();
+  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases, fetchRegistros]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const processFile = async (file: File) => {
@@ -563,6 +568,19 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
             </Suspense>
           )}
 
+          {/* ── TIME CONTROL ── */}
+          {view === "time-control" && (
+            <Suspense fallback={
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+              </div>
+            }>
+              <TimeControlView />
+            </Suspense>
+          )}
+
+         
+
           {/* ── UPLOAD ── */}
           {view === "upload" && !uploading && (
             <div>
@@ -705,6 +723,9 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           )}
         </main>
       </div>
+
+      {/* Pomodoro — flotante, siempre visible */}
+      <PomodoroWidget />
 
       {/* Bottom nav — solo en mobile */}
       <BottomNav onUpload={handleUpload} />
