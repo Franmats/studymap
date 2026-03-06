@@ -14,7 +14,7 @@ export const DEFAULT_CONFIGS: ActividadConfig[] = [
   { categoria:"ocio",      label:"Ocio / Personal",   icon:"🎮", color:"#FF6B6B", min_horas:0,  max_horas:3  },
 ];
 
-function hoy() { return new Date().toISOString().split("T")[0]; }
+
 
 interface TimeControlStore {
   registros:  TimeControlRow[];
@@ -72,7 +72,7 @@ export const useTimeControlStore = create<TimeControlStore>()(
 
         if (existing) {
           // Update
-          const prev = get().registros;
+       /*    const prev = get().registros; */
           set(s => ({ registros: s.registros.map(r =>
             r.id === existing.id ? { ...r, horas, nota: nota ?? null } : r
           )}));
