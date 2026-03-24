@@ -167,10 +167,10 @@ function TPForm({ tp, onClose }: { tp?: TPRow; onClose: () => void }) {
                   <button
                     key={m.id}
                     className={`tp-materia-chip${materiaId === m.id ? " active" : ""}`}
-                    style={materiaId === m.id ? { borderColor: m.color, background: `${m.color}18`, color: m.color } : {}}
+                    style={materiaId === m.id ? { borderColor: m.color ?? undefined, background: `${m.color ?? "#6C5CE7"}18`, color: m.color ?? undefined } : {}}
                     onClick={() => setMateriaId(m.id)}
                   >
-                    <span className="tp-materia-chip-dot" style={{ background: m.color }} />
+                    <span className="tp-materia-chip-dot" style={{ background: m.color ?? undefined }} />
                     {m.nombre.length > 22 ? m.nombre.slice(0, 22) + "…" : m.nombre}
                   </button>
                 ))}

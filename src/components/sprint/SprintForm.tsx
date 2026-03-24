@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useMateriaStore } from "../../store/useMateriaStore";
 import { useSprintStore } from "../../store/useSprintStore";
-import type { SprintTema } from "../../types";
+
 
 interface Props { onClose: () => void; }
 
