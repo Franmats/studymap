@@ -10,6 +10,7 @@ const NAV_ITEMS: { view: View; icon: string; label: string }[] = [
   { view: "list",     icon: "📚", label: "Materias"   },
   { view: "sprint",   icon: "🚀", label: "Sprints"    },
   { view: "schedule",     icon: "🗓️", label: "Horarios"       },
+  { view: "tps",          icon: "📝", label: "TPs"            },
   { view: "time-control", icon: "⏱️", label: "Tiempo"         },
   { view: "calendar", icon: "📅", label: "Calendario" },
 ];

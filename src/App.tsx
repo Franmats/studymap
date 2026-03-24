@@ -26,7 +26,9 @@ import { useSesionStore }   from "./store/useSesionStore";
 import { useSprintStore }   from "./store/useSprintStore";
 import { useScheduleStore }   from "./store/useScheduleStore";
 import { useTimeControlStore } from "./store/useTimeControlStore";
+import { useTPStore }           from "./store/useTPStore";
 import { PomodoroWidget }      from "./components/pomodoro/PomodoroWidget";
+const TPView = lazy(() => import("./components/tp/TPView").then(m => ({ default: m.TPView })));
 
 // Lazy loading — CalendarView, ShareCard y SprintView solo se cargan cuando el usuario los abre
 const CalendarView  = lazy(() => import("./components/calendar/CalendarView").then(m => ({ default: m.CalendarView })));
@@ -252,6 +254,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
   const fetchSprints  = useSprintStore(s => s.fetchSprints);
   const fetchClases      = useScheduleStore(s => s.fetchClases);
   const fetchRegistros   = useTimeControlStore(s => s.fetchRegistros);
+  const fetchTPs         = useTPStore(s => s.fetchTPs);
 
   // ── Búsqueda y filtros ────────────────────────────────────────────────────
   const [query,          setQuery]          = useState("");
@@ -293,7 +296,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
     fetchSprints();
     fetchClases();
     fetchRegistros();
-  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases, fetchRegistros]);
+    fetchTPs();
+  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases, fetchRegistros, fetchTPs]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const processFile = async (file: File) => {
@@ -317,6 +321,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
         id: "", user_id: "personal",
         nombre: data.materia, descripcion: data.descripcion,
         duracion_semanas: data.duracion_semanas,
+        color:"#6C5CE7",
         syllabus_json: data, units_json: enriched,
         progress_percent: 0, etiqueta: null, created_at: "", updated_at: "",
       });
@@ -389,6 +394,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
       duracion_semanas: syllabus?.duracion_semanas ?? null,
       syllabus_json: syllabus!,
       units_json: newUnits,
+      color: "#6C5CE7",
       progress_percent: 0,
       etiqueta: null,
       created_at: "",
@@ -568,6 +574,17 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
             </Suspense>
           )}
 
+          {/* ── TPS ── */}
+          {view === "tps" && (
+            <Suspense fallback={
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+              </div>
+            }>
+              <TPView />
+            </Suspense>
+          )}
+
           {/* ── TIME CONTROL ── */}
           {view === "time-control" && (
             <Suspense fallback={
@@ -579,8 +596,17 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
             </Suspense>
           )}
 
-         
 
+{/*           {view === "landing" && (
+            <Suspense fallback={
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+              </div>
+            }>
+              <LandingView />
+            </Suspense>
+          )}
+ */}
           {/* ── UPLOAD ── */}
           {view === "upload" && !uploading && (
             <div>

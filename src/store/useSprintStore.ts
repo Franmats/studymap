@@ -3,7 +3,7 @@ import { toast } from "../components/Toast";
 import { supabase } from "../lib/supabase";
 import { getAuthUserId } from "./useAuthStore";
 import { useMateriaStore } from "./useMateriaStore";
-import type { SprintRow, DailyEntry, Retro } from "../types";
+import type { SprintRow,  DailyEntry, Retro } from "../types";
 
 function USER_ID() { return getAuthUserId(); }
 
@@ -17,9 +17,10 @@ interface SprintStore {
   addDaily:       (sprintId: string, entry: DailyEntry) => Promise<void>;
   closeSprint:    (sprintId: string, retro: Retro) => Promise<void>;
   cancelSprint:   (sprintId: string) => Promise<void>;
+  addTPToSprint:  (sprintId: string, tp: { id: string; titulo: string; materia_id: string; materia_nombre: string; materia_color: string }) => Promise<void>;
 
   // helpers
-  activeSprint:   () => SprintRow | null;
+  activeSprints:  () => SprintRow[];
   velocity:       () => number;  // promedio temas completados por sprint
 }
 
@@ -145,7 +146,30 @@ export const useSprintStore = create<SprintStore>((set, get) => ({
     if (error) toast.error("Error al cancelar sprint");
   },
 
-  activeSprint: () => get().sprints.find(s => s.status === "active") ?? null,
+  addTPToSprint: async (sprintId, tp) => {
+    const sprint = get().sprints.find(s => s.id === sprintId);
+    if (!sprint) return;
+    // Representar el TP como un SprintTema especial con prefijo "tp:"
+    const tpTema = {
+      materia_id:     tp.materia_id,
+      materia_nombre: tp.materia_nombre,
+      unidad_num:     0,
+      unidad_titulo:  "📝 TP",
+      tema_idx:       -1,
+      tema_nombre:    tp.titulo,
+      done:           false,
+      tp_id:          tp.id,
+    } as any;
+    const yaExiste = sprint.temas.some((t: any) => t.tp_id === tp.id);
+    if (yaExiste) { toast.error("Este TP ya está en el sprint"); return; }
+    const nuevasTemas = [...sprint.temas, tpTema];
+    set(s => ({ sprints: s.sprints.map(sp => sp.id === sprintId ? { ...sp, temas: nuevasTemas } : sp) }));
+    const { error } = await supabase.from("sprints").update({ temas: nuevasTemas }).eq("id", sprintId);
+    if (error) { toast.error("Error al agregar TP al sprint"); return; }
+    toast.success("TP agregado al sprint ✓");
+  },
+
+  activeSprints: () => get().sprints.filter(s => s.status === "active"),
 
   velocity: () => {
     const completed = get().sprints.filter(s => s.status === "completed");

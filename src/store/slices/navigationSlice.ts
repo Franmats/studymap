@@ -1,4 +1,4 @@
-export type View = "list" | "upload" | "roadmap" | "calendar" | "sprint" | "schedule" | "time-control";
+export type View = "list" | "upload" | "roadmap" | "calendar" | "sprint" | "schedule" | "time-control" | "tps";
 
 export interface NavigationSlice {
   view: View;

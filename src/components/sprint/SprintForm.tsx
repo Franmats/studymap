@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useMateriaStore } from "../../store/useMateriaStore";
 import { useSprintStore } from "../../store/useSprintStore";
-
+import type { SprintTema } from "../../types";
 
 interface Props { onClose: () => void; }
 
@@ -28,7 +28,7 @@ function fmtDate(s: string) {
 export function SprintForm({ onClose }: Props) {
   const materias     = useMateriaStore(s => s.materias);
   const createSprint = useSprintStore(s => s.createSprint);
-  const activeSprint = useSprintStore(s => s.activeSprint);
+
 
   const [nombre,    setNombre]    = useState("");
   const [objetivo,  setObjetivo]  = useState("");
@@ -105,20 +105,6 @@ export function SprintForm({ onClose }: Props) {
   const activeMateriaObj = structure.find(m => m.id === activeMat);
   const activeUnidadObj  = activeMateriaObj?.unidades.find(u => u.num === activeUnit);
 
-  const ya = activeSprint();
-  if (ya) return (
-    <div className="sf-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="sf-modal sf-modal-sm">
-        <div className="sf-handle" />
-        <div className="sf-title">⚠️ Sprint activo</div>
-        <p style={{ color:"rgba(255,255,255,.55)", fontSize:14, lineHeight:1.6, margin:"16px 0 24px" }}>
-          Ya tenés un sprint activo: <strong style={{color:"#fff"}}>"{ya.nombre}"</strong>.<br/>
-          Cerralo o cancelalo antes de crear uno nuevo.
-        </p>
-        <button className="sf-btn-cancel" onClick={onClose}>Entendido</button>
-      </div>
-    </div>
-  );
 
   return (
     <div className="sf-overlay" onClick={e => e.target === e.currentTarget && onClose()}>

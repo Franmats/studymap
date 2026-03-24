@@ -34,6 +34,7 @@ export interface MateriaRow {
   duracion_semanas: number | null;
   syllabus_json: Syllabus;
   units_json: Unidad[];
+  color: string | null;
   progress_percent: number;
   etiqueta: string | null;   // cuatrimestre / etiqueta libre
   created_at: string;
@@ -139,4 +140,21 @@ export interface TimeControlRow {
   horas:      number;
   nota:       string | null;
   created_at: string;
+}
+
+// ── Trabajos Prácticos ─────────────────────────────────────────────────────────
+export type TPEstado = "pendiente" | "en_progreso" | "entregado";
+
+export interface TPRow {
+  id:           string;
+  user_id:      string;
+  materia_id:   string;
+  materia_nombre: string;
+  materia_color:  string;
+  titulo:       string;
+  descripcion:  string | null;
+  fecha_inicio: string;        // YYYY-MM-DD
+  fecha_entrega: string;       // YYYY-MM-DD
+  estado:       TPEstado;
+  created_at:   string;
 }
