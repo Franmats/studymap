@@ -7,13 +7,14 @@ import type { ActividadCategoria, ActividadConfig, TimeControlRow } from "../typ
 
 // ── Configuración por defecto de categorías ───────────────────────────────────
 export const DEFAULT_CONFIGS: ActividadConfig[] = [
-  { categoria:"estudio",   label:"Estudio",          icon:"📚", color:"#6C5CE7", min_horas:3,  max_horas:8  },
-  { categoria:"cursada",   label:"Cursada",           icon:"🎓", color:"#a29bfe", min_horas:0,  max_horas:6  },
-  { categoria:"descanso",  label:"Descanso / Sueño",  icon:"😴", color:"#55EFC4", min_horas:7,  max_horas:9  },
-  { categoria:"ejercicio", label:"Ejercicio",         icon:"💪", color:"#FF9F43", min_horas:1,  max_horas:3  },
-  { categoria:"ocio",      label:"Ocio / Personal",   icon:"🎮", color:"#FF6B6B", min_horas:0,  max_horas:3  },
+  { categoria:"estudio",    label:"Estudio",          icon:"📚", color:"#6C5CE7", min_horas:3,  max_horas:8  },
+  { categoria:"cursada",    label:"Cursada",           icon:"🎓", color:"#a29bfe", min_horas:0,  max_horas:6  },
+  { categoria:"trabajo",    label:"Trabajo",           icon:"💼", color:"#FF9F43", min_horas:0,  max_horas:9  },
+  { categoria:"descanso",   label:"Descanso / Sueño",  icon:"😴", color:"#55EFC4", min_horas:7,  max_horas:9  },
+  { categoria:"ejercicio",  label:"Ejercicio",         icon:"💪", color:"#00CEC9", min_horas:1,  max_horas:3  },
+  { categoria:"transporte", label:"Transporte",        icon:"🚌", color:"#636e72", min_horas:0,  max_horas:4  },
+  { categoria:"ocio",       label:"Ocio / Personal",   icon:"🎮", color:"#FF6B6B", min_horas:0,  max_horas:3  },
 ];
-
 
 
 interface TimeControlStore {
@@ -72,7 +73,7 @@ export const useTimeControlStore = create<TimeControlStore>()(
 
         if (existing) {
           // Update
-       /*    const prev = get().registros; */
+          
           set(s => ({ registros: s.registros.map(r =>
             r.id === existing.id ? { ...r, horas, nota: nota ?? null } : r
           )}));

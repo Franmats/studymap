@@ -34,7 +34,6 @@ export interface MateriaRow {
   duracion_semanas: number | null;
   syllabus_json: Syllabus;
   units_json: Unidad[];
-  color: string | null;
   progress_percent: number;
   etiqueta: string | null;   // cuatrimestre / etiqueta libre
   created_at: string;
@@ -113,7 +112,7 @@ export interface ClaseRow {
 }
 
 // ── Time Control types ─────────────────────────────────────────────────────────
-export type ActividadCategoria = "estudio" | "cursada" | "descanso" | "ejercicio" | "ocio";
+export type ActividadCategoria = "estudio" | "cursada" | "descanso" | "ejercicio" | "ocio" | "trabajo" | "transporte";
 
 export interface ActividadConfig {
   categoria:  ActividadCategoria;
