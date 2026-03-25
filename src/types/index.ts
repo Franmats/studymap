@@ -32,6 +32,7 @@ export interface MateriaRow {
   nombre: string;
   descripcion: string | null;
   duracion_semanas: number | null;
+  color: string | null;
   syllabus_json: Syllabus;
   units_json: Unidad[];
   progress_percent: number;
