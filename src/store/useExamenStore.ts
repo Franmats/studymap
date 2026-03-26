@@ -17,8 +17,9 @@ export interface ExamenStore {
     fecha: string;
     tipo: ExamenTipo;
     notas?: string;
+    unidades_nums?: number[] | null;
   }) => Promise<ExamenRow | null>;
-  updateExamen: (id: string, data: Partial<Pick<ExamenRow, "titulo" | "fecha" | "tipo" | "notas" | "aprobado">>) => Promise<void>;
+  updateExamen: (id: string, data: Partial<Pick<ExamenRow, "titulo" | "fecha" | "tipo" | "notas" | "aprobado" | "unidades_nums">>) => Promise<void>;
   deleteExamen: (id: string) => Promise<void>;
 }
 
@@ -43,16 +44,20 @@ export const useExamenStore = create<ExamenStore>()((set, get) => ({
     }
   },
 
-  saveExamen: async ({ materia_id, titulo, fecha, tipo, notas }) => {
+  saveExamen: async ({ materia_id, titulo, fecha, tipo, notas, unidades_nums }) => {
     try {
       const { data, error } = await supabase
         .from("examenes")
-        .insert({ user_id: USER_ID(), materia_id, titulo, fecha, tipo, notas: notas ?? null, aprobado: null })
+        .insert({
+          user_id: USER_ID(), materia_id, titulo, fecha, tipo,
+          notas: notas ?? null,
+          aprobado: null,
+          unidades_nums: unidades_nums ?? null,
+        })
         .select()
         .single();
       if (error) throw error;
       const saved = data as ExamenRow;
-      // Optimistic: agregamos y re-ordenamos por fecha
       set((state) => ({
         examenes: [...state.examenes, saved].sort((a, b) => a.fecha.localeCompare(b.fecha)),
       }));
@@ -66,7 +71,6 @@ export const useExamenStore = create<ExamenStore>()((set, get) => ({
 
   updateExamen: async (id, data) => {
     const previous = get().examenes;
-    // Optimistic update
     set((state) => ({
       examenes: state.examenes
         .map((e) => (e.id === id ? { ...e, ...data } : e))
@@ -77,7 +81,7 @@ export const useExamenStore = create<ExamenStore>()((set, get) => ({
       if (error) throw error;
     } catch (e) {
       console.error("updateExamen:", e);
-      set({ examenes: previous }); // rollback
+      set({ examenes: previous });
     }
   },
 

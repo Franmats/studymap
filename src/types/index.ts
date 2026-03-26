@@ -32,7 +32,7 @@ export interface MateriaRow {
   nombre: string;
   descripcion: string | null;
   duracion_semanas: number | null;
-  color: string | null;
+  color: string | null;   // formato hex, ej "#FF5733"
   syllabus_json: Syllabus;
   units_json: Unidad[];
   progress_percent: number;
@@ -50,6 +50,7 @@ export interface ExamenRow {
   tipo: ExamenTipo;
   notas: string | null;
   aprobado: boolean | null;
+  unidades_nums: number[] | null;   // qué unidades entra el examen (null = todas)
   created_at: string;
 }
 

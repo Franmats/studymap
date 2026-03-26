@@ -28,7 +28,9 @@ import { useScheduleStore }   from "./store/useScheduleStore";
 import { useTimeControlStore } from "./store/useTimeControlStore";
 import { useTPStore }           from "./store/useTPStore";
 import { PomodoroWidget }      from "./components/pomodoro/PomodoroWidget";
-const TPView = lazy(() => import("./components/tp/TPView").then(m => ({ default: m.TPView })));
+const TPView            = lazy(() => import("./components/tp/TPView").then(m => ({ default: m.TPView })));
+const AnalyticsDashboard = lazy(() => import("./components/analytics/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
+const AIPlanner          = lazy(() => import("./components/analytics/AIPlanner").then(m => ({ default: m.AIPlanner })));
 
 // Lazy loading — CalendarView, ShareCard y SprintView solo se cargan cuando el usuario los abre
 const CalendarView  = lazy(() => import("./components/calendar/CalendarView").then(m => ({ default: m.CalendarView })));
@@ -321,7 +323,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
         id: "", user_id: "personal",
         nombre: data.materia, descripcion: data.descripcion,
         duracion_semanas: data.duracion_semanas,
-        color:"#6C5CE7",
+        color:"#6C5CE7", // color default, se puede editar después
         syllabus_json: data, units_json: enriched,
         progress_percent: 0, etiqueta: null, created_at: "", updated_at: "",
       });
@@ -390,11 +392,11 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
       id: activeMateriaId,
       user_id: "personal",
       nombre: syllabus?.materia ?? "",
+      color: "#6C5CE7",
       descripcion: syllabus?.descripcion ?? null,
       duracion_semanas: syllabus?.duracion_semanas ?? null,
       syllabus_json: syllabus!,
       units_json: newUnits,
-      color: "#6C5CE7",
       progress_percent: 0,
       etiqueta: null,
       created_at: "",
@@ -574,6 +576,20 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
             </Suspense>
           )}
 
+          {/* ── DASHBOARD ── */}
+          {view === "dashboard" && (
+            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
+              <AnalyticsDashboard />
+            </Suspense>
+          )}
+
+          {/* ── PLANNER ── */}
+          {view === "planner" && (
+            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
+              <AIPlanner />
+            </Suspense>
+          )}
+
           {/* ── TPS ── */}
           {view === "tps" && (
             <Suspense fallback={
@@ -595,9 +611,9 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
               <TimeControlView />
             </Suspense>
           )}
+{/* 
 
-
-{/*           {view === "landing" && (
+          {view === "landing" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
                 <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
@@ -605,8 +621,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
             }>
               <LandingView />
             </Suspense>
-          )}
- */}
+          )} */}
+
           {/* ── UPLOAD ── */}
           {view === "upload" && !uploading && (
             <div>

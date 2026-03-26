@@ -4,6 +4,8 @@ import type { View } from "../store";
 
 const TABS: { view: View | "upload"; icon: string; label: string; special?: boolean }[] = [
   { view: "list",         icon: "📚", label: "Materias"  },
+  { view: "dashboard",    icon: "📊", label: "Dashboard" },
+  { view: "planner",      icon: "🧠", label: "IA Plan"   },
   { view: "sprint",       icon: "🚀", label: "Sprints"   },
   { view: "tps",          icon: "📝", label: "TPs"       },
   { view: "schedule",     icon: "🗓️", label: "Horarios"  },

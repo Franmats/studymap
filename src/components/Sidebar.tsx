@@ -7,12 +7,14 @@ const TIPO_COLOR: Record<string, string> = {
 };
 
 const NAV_ITEMS: { view: View; icon: string; label: string }[] = [
-  { view: "list",     icon: "📚", label: "Materias"   },
-  { view: "sprint",   icon: "🚀", label: "Sprints"    },
-  { view: "schedule",     icon: "🗓️", label: "Horarios"       },
-  { view: "tps",          icon: "📝", label: "TPs"            },
-  { view: "time-control", icon: "⏱️", label: "Tiempo"         },
-  { view: "calendar", icon: "📅", label: "Calendario" },
+  { view: "list",         icon: "📚", label: "Materias"        },
+  { view: "dashboard",    icon: "📊", label: "Dashboard"       },
+  { view: "planner",      icon: "🧠", label: "Planificador IA" },
+  { view: "sprint",       icon: "🚀", label: "Sprints"         },
+  { view: "tps",          icon: "📝", label: "TPs"             },
+  { view: "schedule",     icon: "🗓️", label: "Horarios"        },
+  { view: "calendar",     icon: "📅", label: "Calendario"      },
+  { view: "time-control", icon: "⏱️", label: "Tiempo"          },
 ];
 
 function getDias(fecha: string) {
