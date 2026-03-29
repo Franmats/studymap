@@ -185,7 +185,7 @@ const CSS = `
     font-size: 11px; color: rgba(255,255,255,.42); }
   .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-  .units-list { display: flex; flex-direction: column; gap: 10px; }
+  .units-list { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
   .unit-row { display: flex; gap: 6px; align-items: flex-start; }
   .unit-line-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 20px; flex-shrink: 0; }
   .unit-line { width: 2px; }
@@ -323,8 +323,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
         id: "", user_id: "personal",
         nombre: data.materia, descripcion: data.descripcion,
         duracion_semanas: data.duracion_semanas,
-        color:"#6C5CE7", // color default, se puede editar después
         syllabus_json: data, units_json: enriched,
+        color:"#6C5CE7",
         progress_percent: 0, etiqueta: null, created_at: "", updated_at: "",
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -392,10 +392,10 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
       id: activeMateriaId,
       user_id: "personal",
       nombre: syllabus?.materia ?? "",
-      color: "#6C5CE7",
       descripcion: syllabus?.descripcion ?? null,
       duracion_semanas: syllabus?.duracion_semanas ?? null,
       syllabus_json: syllabus!,
+      color:"#6C5CE7",
       units_json: newUnits,
       progress_percent: 0,
       etiqueta: null,
@@ -611,9 +611,9 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
               <TimeControlView />
             </Suspense>
           )}
-{/* 
 
-          {view === "landing" && (
+
+     {/*      {view === "landing" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
                 <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
