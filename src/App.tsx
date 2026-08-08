@@ -27,8 +27,10 @@ import { useSprintStore }   from "./store/useSprintStore";
 import { useScheduleStore }   from "./store/useScheduleStore";
 import { useTimeControlStore } from "./store/useTimeControlStore";
 import { useTPStore }           from "./store/useTPStore";
+import { useTareasStore }       from "./store/useTareasStore";
 import { PomodoroWidget }      from "./components/pomodoro/PomodoroWidget";
 const TPView            = lazy(() => import("./components/tp/TPView").then(m => ({ default: m.TPView })));
+const HomeView           = lazy(() => import("./components/home/HomeView").then(m => ({ default: m.HomeView })));
 const AnalyticsDashboard = lazy(() => import("./components/analytics/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
 const AIPlanner          = lazy(() => import("./components/analytics/AIPlanner").then(m => ({ default: m.AIPlanner })));
 
@@ -40,20 +42,20 @@ const ScheduleView  = lazy(() => import("./components/schedule/ScheduleView").th
 const TimeControlView = lazy(() => import("./components/timecontrol/TimeControlView").then(m => ({ default: m.TimeControlView })));
 
 const COLORS = [
-  { bg: "#FF6B6B", light: "#FFE5E5", text: "#8B0000" },
-  { bg: "#FF9F43", light: "#FFF0DC", text: "#7A4100" },
-  { bg: "#FECA57", light: "#FFFACC", text: "#6B5B00" },
+  { bg: "#B04040", light: "#FFE5E5", text: "#8B0000" },
+  { bg: "#7A5C3A", light: "#FFF0DC", text: "#7A4100" },
+  { bg: "#B07D2A", light: "#FFFACC", text: "#6B5B00" },
   { bg: "#48CAE4", light: "#DCF5FA", text: "#004E6B" },
-  { bg: "#6C5CE7", light: "#EAE6FF", text: "#2D1B8B" },
+  { bg: "#3B6FE0", light: "#EAE6FF", text: "#2D1B8B" },
   { bg: "#A29BFE", light: "#F0EEFF", text: "#2D1B8B" },
-  { bg: "#55EFC4", light: "#DFFAF4", text: "#005E3F" },
+  { bg: "#3B6FE0", light: "#DFFAF4", text: "#005E3F" },
   { bg: "#FD79A8", light: "#FFE5F1", text: "#7B0038" },
 ];
 
 const STATUS_CONFIG = {
   pending:     { label: "Pendiente",   color: "#adb5bd" },
-  in_progress: { label: "En progreso", color: "#FF9F43" },
-  done:        { label: "Completado",  color: "#55EFC4" },
+  in_progress: { label: "En progreso", color: "#7A5C3A" },
+  done:        { label: "Completado",  color: "#3B6FE0" },
 } as const;
 
 const CSS = `
@@ -67,7 +69,7 @@ const CSS = `
   /* ── LAYOUT ── */
   .app {
     min-height: 100dvh;
-    background: linear-gradient(150deg,#0f0c29 0%,#302b63 55%,#1a1040 100%);
+    background: #0A0A0A;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     padding-bottom: 64px;
   }
@@ -75,7 +77,7 @@ const CSS = `
   /* En desktop: layout de dos columnas, la sidebar ocupa 240px */
   @media (min-width: 720px) {
     .app { padding-bottom: 0; }
-    .app-body { margin-left: 240px; }
+    .app-body { margin-left: 240px; overflow-x: hidden; }
   }
 
   /* ── PAGE CONTENT ── */
@@ -86,7 +88,7 @@ const CSS = `
   }
 
   @media (min-width: 720px) {
-    .page { padding: 28px 36px 40px; max-width: 800px; }
+    .page { padding: 28px 36px 40px; max-width: 860px; }
   }
 
   /* ── LIST ── */
@@ -107,9 +109,9 @@ const CSS = `
   .empty-title { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px; }
   .empty-desc { font-size: 13px; color: rgba(255,255,255,.38); margin-bottom: 22px; line-height: 1.55; }
   .btn-pill { display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg,#6C5CE7,#a29bfe); color: #fff;
+    background: linear-gradient(135deg,#3B6FE0,#5B8FF0); color: #fff;
     padding: 13px 28px; border-radius: 50px; border: none; cursor: pointer;
-    font-size: 14px; font-weight: 700; box-shadow: 0 5px 18px #6C5CE766;
+    font-size: 14px; font-weight: 700; box-shadow: 0 5px 18px #3B6FE066;
     -webkit-tap-highlight-color: transparent; }
   .btn-pill:active { transform: scale(.97); }
 
@@ -118,28 +120,28 @@ const CSS = `
     padding: 48px 24px; text-align: center; cursor: pointer;
     background: rgba(255,255,255,.025); transition: all .22s;
     -webkit-tap-highlight-color: transparent; }
-  .upload-zone.drag { border-color: #a29bfe; background: rgba(162,155,254,.07); }
+  .upload-zone.drag { border-color: #5B8FF0; background: rgba(91,196,173,.07); }
   .upload-icon { font-size: 52px; margin-bottom: 14px; }
   .upload-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 7px; }
   .upload-desc { font-size: 13px; color: rgba(255,255,255,.42); margin-bottom: 22px; line-height: 1.55; }
   .upload-cta { display: inline-flex; align-items: center; gap: 8px;
-    background: linear-gradient(135deg,#6C5CE7,#a29bfe); color: #fff;
+    background: linear-gradient(135deg,#3B6FE0,#5B8FF0); color: #fff;
     padding: 13px 28px; border-radius: 50px; font-weight: 700; font-size: 15px;
-    box-shadow: 0 5px 18px #6C5CE766; pointer-events: none; }
-  .upload-err { margin-top: 14px; color: #FF6B6B; font-size: 13px; font-weight: 500; }
+    box-shadow: 0 5px 18px #3B6FE066; pointer-events: none; }
+  .upload-err { margin-top: 14px; color: #B04040; font-size: 13px; font-weight: 500; }
 
   /* Duplicate banner */
   .dup-banner { background: rgba(254,202,87,.07); border: 1px solid rgba(254,202,87,.3);
     border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
   .dup-top { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
   .dup-emoji { font-size: 20px; flex-shrink: 0; }
-  .dup-title { font-weight: 700; color: #FECA57; font-size: 13px; margin-bottom: 3px; }
+  .dup-title { font-weight: 700; color: #B07D2A; font-size: 13px; margin-bottom: 3px; }
   .dup-desc { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.45; }
   .dup-btns { display: flex; gap: 8px; }
-  .dup-btn-open { flex: 1; background: linear-gradient(135deg,#6C5CE7,#a29bfe);
+  .dup-btn-open { flex: 1; background: linear-gradient(135deg,#3B6FE0,#5B8FF0);
     border: none; color: #fff; padding: 9px; border-radius: 9px;
     cursor: pointer; font-size: 12px; font-weight: 700; }
-  .dup-btn-skip { flex: 1; background: rgba(255,255,255,.07);
+  .dup-btn-skip { flex: 1; background: rgba(0,0,0,.05);
     border: 1px solid rgba(255,255,255,.13); color: rgba(255,255,255,.65);
     padding: 9px; border-radius: 9px; cursor: pointer; font-size: 12px; font-weight: 600; }
 
@@ -148,7 +150,7 @@ const CSS = `
     background: rgba(255,255,255,.025); border-radius: 20px;
     border: 1px solid rgba(255,255,255,.06); }
   .loading-ring { width: 52px; height: 52px; margin: 0 auto 20px;
-    border: 3px solid rgba(255,255,255,.07); border-top-color: #a29bfe;
+    border: 3px solid rgba(0,0,0,.05); border-top-color: #5B8FF0;
     border-radius: 50%; animation: spin .9s linear infinite; }
   .loading-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 6px; }
   .loading-sub { font-size: 12px; color: rgba(255,255,255,.32); }
@@ -157,7 +159,7 @@ const CSS = `
   .rm-layout { display: flex; flex-direction: column; gap: 14px; }
 
   /* En desktop el header del roadmap va en una card compacta arriba */
-  .rm-card { background: rgba(255,255,255,.04); border-radius: 18px; padding: 18px 20px;
+  .rm-card { background: #141414; border-radius: 18px; padding: 18px 20px;
     border: 1px solid rgba(255,255,255,.08); }
   .rm-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 2px;
     color: rgba(255,255,255,.3); text-transform: uppercase; margin-bottom: 4px; }
@@ -166,7 +168,7 @@ const CSS = `
   .rm-desc { font-size: 12px; color: rgba(255,255,255,.42); line-height: 1.45; margin-bottom: 16px; }
 
   .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
-  .stat { background: rgba(255,255,255,.06); border-radius: 11px; padding: 11px 6px; text-align: center; }
+  .stat { background: rgba(255,255,255,.07); border-radius: 11px; padding: 11px 6px; text-align: center; border: 1px solid rgba(255,255,255,.08); }
   .stat-icon { font-size: 16px; margin-bottom: 3px; }
   .stat-val { font-size: 18px; font-weight: 900; color: #fff; line-height: 1; }
   .stat-lbl { font-size: 8.5px; color: rgba(255,255,255,.32); margin-top: 2px;
@@ -175,10 +177,10 @@ const CSS = `
   .prog-bar-wrap { margin-bottom: 12px; }
   .prog-meta { display: flex; justify-content: space-between; margin-bottom: 5px; }
   .prog-count { font-size: 11px; color: rgba(255,255,255,.32); font-weight: 600; }
-  .prog-pct { font-size: 11px; color: #a29bfe; font-weight: 700; }
-  .prog-track { height: 6px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; }
+  .prog-pct { font-size: 11px; color: #5B8FF0; font-weight: 700; }
+  .prog-track { height: 6px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; }
   .prog-fill { height: 100%; border-radius: 99px;
-    background: linear-gradient(90deg,#6C5CE7,#55EFC4); transition: width .5s ease; }
+    background: linear-gradient(90deg,#3B6FE0,#3B6FE0); transition: width .5s ease; }
 
   .status-row { display: flex; gap: 12px; flex-wrap: wrap; }
   .status-pill { display: flex; align-items: center; gap: 5px;
@@ -192,15 +194,16 @@ const CSS = `
   .unit-content { flex: 1; min-width: 0; }
 
   .finish-box { margin-top: 28px; text-align: center; padding: 40px 24px;
-    background: rgba(85,239,196,.07); border-radius: 20px; border: 2px solid rgba(85,239,196,.25); }
+    background: rgba(76,175,130,.07); border-radius: 20px; border: 2px solid rgba(76,175,130,.25); }
   .finish-icon { font-size: 48px; margin-bottom: 8px; }
-  .finish-title { font-size: 20px; font-weight: 800; color: #55EFC4; margin-bottom: 6px; }
+  .finish-title { font-size: 20px; font-weight: 800; color: #3B6FE0; margin-bottom: 6px; }
   .finish-sub { font-size: 13px; color: rgba(255,255,255,.4); }
 
   /* ── DESKTOP ROADMAP — dos columnas: info + lista ── */
   @media (min-width: 900px) {
-    .rm-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-    .rm-card { position: sticky; top: 80px; } /* se queda fija mientras scrolleás las unidades */
+    .rm-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; align-items: start; min-width: 0; }
+    .rm-layout > * { min-width: 0; }
+    .rm-card { position: sticky; top: 80px; overflow: hidden; }
     .stats-grid { grid-template-columns: repeat(2,1fr); }
   }
 `;
@@ -257,6 +260,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
   const fetchClases      = useScheduleStore(s => s.fetchClases);
   const fetchRegistros   = useTimeControlStore(s => s.fetchRegistros);
   const fetchTPs         = useTPStore(s => s.fetchTPs);
+  const fetchTareas      = useTareasStore(s => s.fetchTareas);
 
   // ── Búsqueda y filtros ────────────────────────────────────────────────────
   const [query,          setQuery]          = useState("");
@@ -299,7 +303,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
     fetchClases();
     fetchRegistros();
     fetchTPs();
-  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases, fetchRegistros, fetchTPs]);
+    fetchTareas();
+  }, [fetchMaterias, fetchExamenes, fetchHistorial, fetchSprints, fetchClases, fetchRegistros, fetchTPs, fetchTareas]);
 
   // ── Handlers ───────────────────────────────────────────────────────────────
   const processFile = async (file: File) => {
@@ -324,8 +329,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
         nombre: data.materia, descripcion: data.descripcion,
         duracion_semanas: data.duracion_semanas,
         syllabus_json: data, units_json: enriched,
-        color:"#6C5CE7",
         progress_percent: 0, etiqueta: null, created_at: "", updated_at: "",
+        color:"#ffffff",
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -395,11 +400,11 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
       descripcion: syllabus?.descripcion ?? null,
       duracion_semanas: syllabus?.duracion_semanas ?? null,
       syllabus_json: syllabus!,
-      color:"#6C5CE7",
       units_json: newUnits,
       progress_percent: 0,
       etiqueta: null,
       created_at: "",
+      color: "#ffffff",
       updated_at: "",
     });
     await updateProgress(activeMateriaId, newUnits);
@@ -488,7 +493,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
                     <button
                       onClick={() => setShowShare(true)}
                       style={{
-                        background:"rgba(255,255,255,.07)", border:"1px solid rgba(255,255,255,.1)",
+                        background:"rgba(0,0,0,.05)", border:"1px solid rgba(255,255,255,.08)",
                         color:"rgba(255,255,255,.6)", borderRadius:10, padding:"7px 13px",
                         cursor:"pointer", fontSize:12, fontWeight:700, flexShrink:0,
                         display:"flex", alignItems:"center", gap:5,
@@ -547,7 +552,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           {view === "calendar" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <CalendarView />
@@ -558,7 +563,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           {view === "sprint" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <SprintView />
@@ -569,23 +574,30 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           {view === "schedule" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <ScheduleView />
             </Suspense>
           )}
 
+          {/* ── HOME ── */}
+          {view === "home" && (
+            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
+              <HomeView />
+            </Suspense>
+          )}
+
           {/* ── DASHBOARD ── */}
           {view === "dashboard" && (
-            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
+            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
               <AnalyticsDashboard />
             </Suspense>
           )}
 
           {/* ── PLANNER ── */}
           {view === "planner" && (
-            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
+            <Suspense fallback={<div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}><div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }}/></div>}>
               <AIPlanner />
             </Suspense>
           )}
@@ -594,7 +606,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           {view === "tps" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <TPView />
@@ -605,18 +617,18 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
           {view === "time-control" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <TimeControlView />
             </Suspense>
           )}
 
-
-     {/*      {view === "landing" && (
+          {/* ── LANDING ── */}
+        {/*   {view === "landing" && (
             <Suspense fallback={
               <div style={{ display:"flex", alignItems:"center", justifyContent:"center", padding:60 }}>
-                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.1)", borderTopColor:"#6C5CE7", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
+                <div style={{ width:32, height:32, border:"3px solid rgba(255,255,255,.08)", borderTopColor:"#3B6FE0", borderRadius:"50%", animation:"spin .8s linear infinite" }} />
               </div>
             }>
               <LandingView />
@@ -633,7 +645,7 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
                     <div>
                       <div className="dup-title">Esta materia ya existe</div>
                       <div className="dup-desc">
-                        Ya tenés <strong style={{ color:"#fff" }}>{duplicate.nombre}</strong>{" "}
+                        Ya tenés <strong style={{ color:"#F0F0F0" }}>{duplicate.nombre}</strong>{" "}
                         con {duplicate.progress_percent}% de progreso.
                       </div>
                     </div>
@@ -659,8 +671,8 @@ function AppInner({ logout }: { logout: () => Promise<void> }) {
                 <div className="upload-title">Subí tu temario</div>
                 <div className="upload-desc">
                   Tocá para elegir o arrastrá un archivo<br/>
-                  <strong style={{ color:"#a29bfe" }}>PDF</strong> o{" "}
-                  <strong style={{ color:"#a29bfe" }}>imagen</strong> del programa de la materia
+                  <strong style={{ color:"#5B8FF0" }}>PDF</strong> o{" "}
+                  <strong style={{ color:"#5B8FF0" }}>imagen</strong> del programa de la materia
                 </div>
                 <div className="upload-cta">✦ Analizar con IA</div>
                 {uploadError && <div className="upload-err">⚠️ {uploadError}</div>}
@@ -786,11 +798,11 @@ export default function App() {
   if (authLoading) return (
     <div style={{
       minHeight:"100dvh", display:"flex", alignItems:"center", justifyContent:"center",
-      background:"linear-gradient(160deg,#0f0c29,#302b63,#1a1040)",
+      background:"#0A0A0A",
     }}>
       <div style={{
         width:40, height:40, border:"3px solid rgba(255,255,255,.15)",
-        borderTopColor:"#6C5CE7", borderRadius:"50%",
+        borderTopColor:"#3B6FE0", borderRadius:"50%",
         animation:"spin 0.8s linear infinite",
       }}/>
     </div>

@@ -3,6 +3,7 @@ import { useAppStore } from "../store";
 import type { View } from "../store";
 
 const TABS: { view: View | "upload"; icon: string; label: string; special?: boolean }[] = [
+  { view: "home",         icon: "🏠", label: "Inicio"    },
   { view: "list",         icon: "📚", label: "Materias"  },
   { view: "dashboard",    icon: "📊", label: "Dashboard" },
   { view: "planner",      icon: "🧠", label: "IA Plan"   },

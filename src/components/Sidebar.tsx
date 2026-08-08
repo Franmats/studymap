@@ -7,6 +7,7 @@ const TIPO_COLOR: Record<string, string> = {
 };
 
 const NAV_ITEMS: { view: View; icon: string; label: string }[] = [
+  { view: "home",      icon: "🏠", label: "Inicio"         },
   { view: "list",         icon: "📚", label: "Materias"        },
   { view: "dashboard",    icon: "📊", label: "Dashboard"       },
   { view: "planner",      icon: "🧠", label: "Planificador IA" },

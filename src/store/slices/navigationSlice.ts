@@ -1,4 +1,4 @@
-export type View = "list" | "upload" | "roadmap" | "calendar" | "sprint" | "schedule" | "time-control" | "tps" | "dashboard" | "planner";
+export type View = "home" | "list" | "upload" | "roadmap" | "calendar" | "sprint" | "schedule" | "time-control" | "tps" | "dashboard" | "planner";
 
 export interface NavigationSlice {
   view: View;
@@ -10,7 +10,7 @@ export const createNavigationSlice = <S extends NavigationSlice>(
   set: (fn: (state: S) => void) => void,
   _get: () => S
 ): NavigationSlice => ({
-  view: "list",
+  view: "home",
 
   setView: (view) => set((state) => { state.view = view; }),
 
